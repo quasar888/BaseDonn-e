@@ -32,7 +32,7 @@
         private static void testTarin(object? obj)
         {
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 1000;
+            timer.Interval = 1;
             timer.Elapsed += Timer_Elapsed;
             timer.Start();
         }
@@ -41,9 +41,9 @@
         {
             lock (lockObject)
             {
-                resultRandX = rand.Next(1, 100);
-                resultRandY = rand.Next(1, 100);
-                Thread.Sleep(1000);
+                resultRandX = rand.Next(1, 10000);
+                resultRandY = rand.Next(1, 10000);
+                //Thread.Sleep(1000);
                 basededonnée = new BD[resultRandX][];
                 try
                 {
@@ -72,9 +72,10 @@
                         for (int j = 0; j < resultRandY; j++)
                         {
                             BD record = basededonnée[i][j];
-                            Console.WriteLine($"ID: {record.Id}, Name: {record.Name}, Status: {record.Status}");
+                           // Console.WriteLine($"ID: {record.Id}, Name: {record.Name}, Status: {record.Status}");
                         }
                     }
+                    Console.WriteLine("//*******************"+ resultRandX +"%%%"+ resultRandY+ "*********************************");
                 }
                 catch
                 {
