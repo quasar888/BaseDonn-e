@@ -2,7 +2,7 @@
 {
     internal class Program
     {
-        private static double[][] basededonnée;
+        private static BD[][] basededonnée; // Updated to use BD class
         private static readonly object lockObject = new object();
 
         static int resultRandX { get; set; }
@@ -41,18 +41,22 @@
         {
             lock (lockObject)
             {
-                resultRandX = rand.Next(1, 10000);
-                resultRandY = rand.Next(1, 10000);
-                //Thread.Sleep(1000);
-                basededonnée = new double[resultRandX][];
+                resultRandX = rand.Next(1, 100);
+                resultRandY = rand.Next(1, 100);
+                Thread.Sleep(1000);
+                basededonnée = new BD[resultRandX][];
                 try
                 {
                     for (int i = 0; i < resultRandX; i++)
                     {
-                        basededonnée[i] = new double[resultRandY];
+                        basededonnée[i] = new BD[resultRandY];
                         for (int j = 0; j < resultRandY; j++)
                         {
-                            basededonnée[i][j] = new double();
+                            // Create BD object using hashed values
+                            int id = GenerateId(i, j);
+                            string name = GenerateName(i, j);
+                            string status = GenerateStatus(i, j);
+                            basededonnée[i][j] = new BD(id, name, status);
                         }
                     }
                 }
@@ -67,11 +71,10 @@
                     {
                         for (int j = 0; j < resultRandY; j++)
                         {
-                            basededonnée[i][j] = rand.NextDouble();
-                            //Console.WriteLine(basededonnée[i][j]);
+                            BD record = basededonnée[i][j];
+                            Console.WriteLine($"ID: {record.Id}, Name: {record.Name}, Status: {record.Status}");
                         }
                     }
-                    Console.WriteLine("/********************************************");
                 }
                 catch
                 {
@@ -79,5 +82,48 @@
                 }
             }
         }
+
+        private static int GenerateId(int i, int j)
+        {
+            // Generate a unique ID based on i and j
+            return i * 100 + j;
+        }
+
+        private static string GenerateName(int i, int j)
+        {
+            // Generate a pseudo-random name based on hash
+            double hashValue = GenerateHashedValue(i, j);
+            return $"Name_{hashValue.ToString("F4")}";
+        }
+
+        private static string GenerateStatus(int i, int j)
+        {
+            // Alternate status based on hash
+            return GenerateHashedValue(i, j) > 0.5 ? "Active" : "Inactive";
+        }
+
+        private static double GenerateHashedValue(int i, int j)
+        {
+            // Seed value to alter the hash
+            int seed = 12345;
+            int hash = (i * 31 + j) ^ seed;
+            double normalizedHash = (double)(hash & 0x7FFFFFFF) / int.MaxValue; // Normalize to range [0, 1)
+            return normalizedHash;
+        }
     }
+    // Class representing a database model
+    public class BD
+    {
+        public int Id { get; set; }      // Unique identifier
+        public string Name { get; set; } // Name of the record
+        public string Status { get; set; } // Status of the record (e.g., Active, Inactive)
+
+        public BD(int id, string name, string status)
+        {
+            Id = id;
+            Name = name;
+            Status = status;
+        }
+    }
+
 }
